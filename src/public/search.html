@@ -18,8 +18,7 @@
       </label>
     </div>
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search by name or description...">
-      <button onclick="search()">Search</button>
+      <input type="text" id="searchInput" placeholder="Search by name or description..." oninput="debounceSearch()">
     </div>
     <div id="status"></div>
     <div id="results"></div>

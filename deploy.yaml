@@ -15,7 +15,7 @@ services:
         VERSION: ${VERSION:-0.0.0}
         COMMIT_HASH: ${COMMIT_HASH:-n/a}
         BUILD_TIMESTAMP: ${BUILD_TIMESTAMP:-n/a}
-        BUILD_TYPE: prod
+        BUILD_TYPE: dev
     ports:
       - "8011:8080"
     environment:

@@ -21,7 +21,7 @@ func Setup() {
 				panic("faled to setup logger")
 			}
 		} else {
-			err = VerboseLoggerSetup()
+			err = prodLoggerSetup()
 			if err != nil {
 				fmt.Printf("err: %v\n", err)
 				panic("faled to setup logger")

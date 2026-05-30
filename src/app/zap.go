@@ -17,54 +17,23 @@ func prodLoggerSetup() error {
 	// log output
 	consoleLogFile := zapcore.Lock(os.Stdout)
 
-	// log configuration no date time and location, just level
+	// log configuration
 	consoleLogConfig := zap.NewProductionEncoderConfig()
-	consoleLogConfig.EncodeTime = nil
-	consoleLogConfig.EncodeCaller = nil
-	// consoleLogConfig.EncodeLevel = nil
-	consoleLogConfig.LevelKey = ""
+	consoleLogConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	consoleLogConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 
 	consoleLogEncoder := zapcore.NewConsoleEncoder(consoleLogConfig)
 
-	/*
-		// file log, text
-		// log level
-		fileLogLevel := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
-			return level >= zapcore.InfoLevel
-		})
-
-		logPath := filepath.Join(config.LOG_FOLDER, config.LOG_FILE)
-		lumberjackLogger := lumberjack.Logger{
-			Filename:   logPath,
-			MaxSize:    config.LOG_FILE_MAX_SIZE,    // size in MB
-			MaxAge:     config.LOG_FILE_MAX_AGE,     // maximum number of days to retain old log files
-			MaxBackups: config.LOG_FILE_MAX_BACKUPS, // maximum number of old log files to retain
-			LocalTime:  true,                        // time used for formatting the timestamps
-			Compress:   false,
-		}
-		fileLogFile := zapcore.Lock(zapcore.AddSync(&lumberjackLogger))
-		// log configuration
-		fileLogConfig := zap.NewProductionEncoderConfig()
-		// configure keys
-		fileLogConfig.TimeKey = "timestamp"
-		fileLogConfig.MessageKey = "message"
-		// configure types
-		fileLogConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-		fileLogConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-		// create encoder
-		fileLogEncoder := zapcore.NewConsoleEncoder(fileLogConfig)
-	*/
 	// setup zap
 	// duplicate log entries into multiple cores
 	core := zapcore.NewTee(
 		zapcore.NewCore(consoleLogEncoder, consoleLogFile, consoleLogLevel),
-		//		zapcore.NewCore(fileLogEncoder, fileLogFile, fileLogLevel),
 	)
 
 	// create logger from core
 	// options = annotate message with the filename, line number, and function name
 	logger := zap.New(core, zap.AddCaller())
-	defer logger.Sync()
+	// No defer Sync here since it closes os.Stdout
 
 	// replace global logger
 	_ = zap.ReplaceGlobals(logger)
@@ -90,12 +59,10 @@ func VerboseLoggerSetup() error {
 	// log output
 	consoleLogFile := zapcore.Lock(os.Stdout)
 
-	// log configuration no date time and location, just level
+	// log configuration
 	consoleLogConfig := zap.NewProductionEncoderConfig()
-	consoleLogConfig.EncodeTime = nil
-	consoleLogConfig.EncodeCaller = nil
-	// consoleLogConfig.EncodeLevel = nil
-	consoleLogConfig.LevelKey = ""
+	consoleLogConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	consoleLogConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 
 	consoleLogEncoder := zapcore.NewConsoleEncoder(consoleLogConfig)
 	core := zapcore.NewTee(
@@ -104,7 +71,7 @@ func VerboseLoggerSetup() error {
 
 	// create logger from core
 	logger := zap.New(core, zap.AddCaller())
-	defer logger.Sync()
+	// defer logger.Sync()
 
 	zap.S().Debugln("New verbose logger created successfully")
 	// replace global logger

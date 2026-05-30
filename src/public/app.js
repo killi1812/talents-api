@@ -1,3 +1,10 @@
+let searchTimeout;
+
+function debounceSearch() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(search, 300); // 300ms debounce
+}
+
 async function search() {
   const query = document.getElementById('searchInput').value;
   const apiKey = document.getElementById('apiKey').value;
@@ -44,10 +51,17 @@ async function search() {
     data.forEach(talent => {
       const card = document.createElement('div');
       card.className = 'talent-card';
+      
+      let testHtml = '';
+      if (talent.test) {
+        testHtml = `<p><strong>Test:</strong> ${talent.test}</p>`;
+      }
+
       card.innerHTML = `
                 <h3>${talent.name}</h3>
                 <p><strong>Version:</strong> ${talent.version} | <strong>Max Level:</strong> ${talent.maxLvl}</p>
-                <p>${talent.description}</p>
+                ${testHtml}
+                <p><strong>Description:</strong> ${talent.description}</p>
             `;
       resultsDiv.appendChild(card);
     });
