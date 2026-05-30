@@ -1,0 +1,22 @@
+name: deployment
+
+on:
+  workflow_call:
+    secrets:
+      WEBHOOK_SECRET:
+        required: true
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    environment: homelab
+    steps:
+      - name: Trigger Deploy Webhook
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: "https://webhook.francvok.from.hr/hooks/cache-server"
+          method: "POST"
+          headers: '{"X-Api-Key": "${{ secrets.WEBHOOK_SECRET }}"}'
+          customHeaders: '{"Content-Type": "application/json"}'
+          retry: 3
+          retryWait: 3000

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  talents-api:
+    build:
+      context: ./src
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017
+      - ADMIN_API_KEY=admin-secret-key
+      - PORT=8080
+    depends_on:
+      - mongodb
+
+volumes:
+  mongo-data:
