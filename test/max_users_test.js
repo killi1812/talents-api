@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 // --- Configuration ---
-const TALENTS_URL = __ENV.API_URL || 'http://192.168.1.110:8011/api';
+const TALENTS_URL = 'http://192.168.1.110:8011/api';
 const AUTH_TOKEN = __ENV.API_KEY;
 
 export const options = {
@@ -26,12 +26,13 @@ const params = {
 };
 
 // Random search terms for query variation
-const searchTerms = ['a', 'b', 'c', 'skill', 'bonus', 'strength', 'magic', 'combat', 'test'];
+const searchTerms = ['strike', 'damage', 'roll', 'skill', 'bonus', 'strength', 'magic', 'combat', 'test'];
 
 export default function () {
   const randomSearch = searchTerms[Math.floor(Math.random() * searchTerms.length)];
-  const query = `?q=${randomSearch}`;
+  const query = `?q=${randomSearch}&limit=100`;
 
+  // http://192.168.1.110:8011/api/talents?q=roll&limit=100
   const res = http.get(`${TALENTS_URL}/talents${query}`, params);
 
   check(res, {

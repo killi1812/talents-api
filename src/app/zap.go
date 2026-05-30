@@ -83,7 +83,6 @@ func devLoggerSetup() error {
 }
 
 func VerboseLoggerSetup() error {
-	zap.S().Debugln("Creating new verbose logger")
 	consoleLogLevel := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
 		return level >= zapcore.DebugLevel
 	})
