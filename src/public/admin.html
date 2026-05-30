@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - API Keys</title>
+  <link rel="stylesheet" href="/public/style.css">
+  <style>
+    .key-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .key-table th, .key-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+    .key-table th { background: #f8f9fa; color: #1a73e8; }
+    .btn-small { padding: 5px 10px; font-size: 0.8em; margin-right: 5px; cursor: pointer; }
+    .delete-btn { background: #dc3545; color: white; border: none; border-radius: 4px; }
+    .delete-btn:hover { background: #c82333; }
+    .create-box { margin-bottom: 20px; padding: 15px; background: #e8f0fe; border-radius: 4px; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>API Key Management</h1>
+    <div class="auth">
+      <input type="password" id="adminKey" placeholder="Enter Admin API Key">
+      <button onclick="saveAdminKey()">Save to Browser</button>
+    </div>
+
+    <div class="create-box">
+      <h3>Create New Key</h3>
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="newKeyDesc" placeholder="Key description (e.g. My Mobile App)">
+        <button onclick="createKey()">Create</button>
+      </div>
+    </div>
+
+    <div id="status"></div>
+    
+    <table class="key-table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Key</th>
+          <th>Last Used</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="keyList"></tbody>
+    </table>
+
+    <div style="margin-top:20px;">
+      <a href="/">Back to Home</a>
+    </div>
+  </div>
+  <script src="/public/app.js"></script>
+  <script>
+    // Load key on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('talent_admin_key');
+      if (saved) {
+        document.getElementById('adminKey').value = saved;
+        loadKeys();
+      }
+    });
+
+    function saveAdminKey() {
+      const key = document.getElementById('adminKey').value;
+      localStorage.setItem('talent_admin_key', key);
+      alert("Key saved to local storage");
+      loadKeys();
+    }
+  </script>
+</body>
+
+</html>

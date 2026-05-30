@@ -11,13 +11,17 @@
 <body>
   <div class="container">
     <h1>Talent Search</h1>
-    <div class="auth">
+    <div class="auth" style="display: flex; align-items: center; gap: 10px;">
       <input type="password" id="apiKey" placeholder="Enter API Key">
+      <label style="font-size: 0.9em; color: #666; cursor: pointer;">
+        <input type="checkbox" id="saveKey"> Save Key
+      </label>
     </div>
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search by name or description...">
       <button onclick="search()">Search</button>
     </div>
+    <div id="status"></div>
     <div id="results"></div>
   </div>
   <script src="/public/app.js"></script>

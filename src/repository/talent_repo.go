@@ -2,11 +2,13 @@ package repository
 
 import (
 	"context"
+
 	"talents-api/models"
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 type TalentRepository struct {
@@ -27,18 +29,24 @@ func (r *TalentRepository) Create(ctx context.Context, talent *models.Talent) er
 	return err
 }
 
-func (r *TalentRepository) GetAll(ctx context.Context) ([]models.Talent, error) {
-	cursor, err := r.collection.Find(ctx, bson.M{})
+func (r *TalentRepository) GetAll(ctx context.Context, limit, skip int64) ([]models.Talent, int64, error) {
+	count, err := r.collection.CountDocuments(ctx, bson.M{})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+
+	opts := options.Find().SetLimit(limit).SetSkip(skip)
+	cursor, err := r.collection.Find(ctx, bson.M{}, opts)
+	if err != nil {
+		return nil, 0, err
 	}
 	defer cursor.Close(ctx)
 
 	var talents []models.Talent
 	if err := cursor.All(ctx, &talents); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return talents, nil
+	return talents, count, nil
 }
 
 func (r *TalentRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.Talent, error) {
@@ -50,24 +58,31 @@ func (r *TalentRepository) GetByID(ctx context.Context, id uuid.UUID) (*models.T
 	return &talent, nil
 }
 
-func (r *TalentRepository) Search(ctx context.Context, query string) ([]models.Talent, error) {
+func (r *TalentRepository) Search(ctx context.Context, query string, limit, skip int64) ([]models.Talent, int64, error) {
 	filter := bson.M{
 		"$or": []bson.M{
 			{"name": bson.M{"$regex": query, "$options": "i"}},
 			{"description": bson.M{"$regex": query, "$options": "i"}},
 		},
 	}
-	cursor, err := r.collection.Find(ctx, filter)
+
+	count, err := r.collection.CountDocuments(ctx, filter)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
+	}
+
+	opts := options.Find().SetLimit(limit).SetSkip(skip)
+	cursor, err := r.collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, 0, err
 	}
 	defer cursor.Close(ctx)
 
 	var talents []models.Talent
 	if err := cursor.All(ctx, &talents); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return talents, nil
+	return talents, count, nil
 }
 
 func (r *TalentRepository) Update(ctx context.Context, talent *models.Talent) error {
@@ -78,4 +93,22 @@ func (r *TalentRepository) Update(ctx context.Context, talent *models.Talent) er
 func (r *TalentRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
 	return err
+}
+
+func (r *TalentRepository) Seed(ctx context.Context, talents []models.Talent) (int, error) {
+	var count int
+	for _, t := range talents {
+		// Check if talent with same name exists
+		exists, _ := r.collection.CountDocuments(ctx, bson.M{"name": t.Name})
+		if exists == 0 {
+			if t.Id == uuid.Nil {
+				t.Id = uuid.New()
+			}
+			_, err := r.collection.InsertOne(ctx, t)
+			if err == nil {
+				count++
+			}
+		}
+	}
+	return count, nil
 }

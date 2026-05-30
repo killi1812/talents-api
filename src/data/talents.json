@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Ambidextrous",
+    "version": "core",
+    "maxLvl": "1",
+    "description": "You can use either hand equally well."
+  },
+  {
+    "name": "Acute Hearing",
+    "version": "core",
+    "maxLvl": "Initiative Bonus",
+    "description": "You have a very sharp sense of hearing."
+  },
+  {
+    "name": "Coolheaded",
+    "version": "core",
+    "maxLvl": "Willpower Bonus",
+    "description": "You are difficult to rattle."
+  }
+]

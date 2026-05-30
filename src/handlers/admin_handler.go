@@ -41,3 +41,37 @@ func (h *AdminHandler) CreateAPIKey(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, key)
 }
+
+// GetAPIKeys godoc
+//
+//	@Summary	List all API keys
+//	@Tags		admin
+//	@Produce	json
+//	@Success	200	{array}	models.APIKey
+//	@Router		/admin/keys [get]
+//	@Security	ApiKeyAuth
+func (h *AdminHandler) GetAPIKeys(c *gin.Context) {
+	keys, err := h.apiKeyRepo.GetAll(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, keys)
+}
+
+// DeleteAPIKey godoc
+//
+//	@Summary	Delete an API key
+//	@Tags		admin
+//	@Param		key	path	string	true	"API Key"
+//	@Success	204	"No Content"
+//	@Router		/admin/keys/{key} [delete]
+//	@Security	ApiKeyAuth
+func (h *AdminHandler) DeleteAPIKey(c *gin.Context) {
+	key := c.Param("key")
+	if err := h.apiKeyRepo.Delete(c.Request.Context(), key); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(http.StatusNoContent)
+}

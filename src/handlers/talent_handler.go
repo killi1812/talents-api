@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strconv"
 	"talents-api/models"
 	"talents-api/repository"
 
@@ -21,25 +22,43 @@ func NewTalentHandler(repo *repository.TalentRepository) *TalentHandler {
 // GetTalents godoc
 //
 //	@Summary		List talents
-//	@Description	get talents, optional search
+//	@Description	get talents, optional search and pagination
 //	@Tags			talents
 //	@Accept			json
 //	@Produce		json
-//	@Param			q	query	string	false	"Search query"
-//	@Success		200	{array}	models.Talent
+//	@Param			q		query		string	false	"Search query"
+//	@Param			page	query		int		false	"Page number (default 1)"
+//	@Param			limit	query		int		false	"Items per page (default 10)"
+//	@Success		200		{object}	models.PaginatedResponse{data=[]models.Talent}
 //	@Security		ApiKeyAuth
 //	@Router			/api/talents [get]
 func (h *TalentHandler) GetTalents(c *gin.Context) {
 	query := c.Query("q")
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	page, _ := strconv.Atoi(pageStr)
+	limit, _ := strconv.Atoi(limitStr)
+
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 10
+	}
+
+	skip := int64((page - 1) * limit)
+
 	var talents []models.Talent
+	var total int64
 	var err error
 
 	if query != "" {
-		zap.S().Debugf("Searching talents with query: %s", query)
-		talents, err = h.repo.Search(c.Request.Context(), query)
+		zap.S().Debugf("Searching talents with query: %s, page: %d, limit: %d", query, page, limit)
+		talents, total, err = h.repo.Search(c.Request.Context(), query, int64(limit), skip)
 	} else {
-		zap.S().Debug("Fetching all talents")
-		talents, err = h.repo.GetAll(c.Request.Context())
+		zap.S().Debugf("Fetching talents, page: %d, limit: %d", page, limit)
+		talents, total, err = h.repo.GetAll(c.Request.Context(), int64(limit), skip)
 	}
 
 	if err != nil {
@@ -47,7 +66,13 @@ func (h *TalentHandler) GetTalents(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, talents)
+
+	c.JSON(http.StatusOK, models.PaginatedResponse{
+		Data:  talents,
+		Total: total,
+		Page:  page,
+		Limit: limit,
+	})
 }
 
 // CreateTalent godoc

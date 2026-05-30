@@ -32,6 +32,9 @@ func AuthMiddleware(apiKeyRepo *repository.APIKeyRepository) gin.HandlerFunc {
 			return
 		}
 
+		// Update last used asynchronously
+		go apiKeyRepo.UpdateLastUsed(c.Request.Context(), key)
+
 		c.Set("isAdmin", false)
 		c.Next()
 	}

@@ -17,6 +17,18 @@ definitions:
         type: string
       key:
         type: string
+      lastUsed:
+        type: string
+    type: object
+  models.PaginatedResponse:
+    properties:
+      data: {}
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
     type: object
   models.Talent:
     properties:
@@ -25,7 +37,7 @@ definitions:
       id:
         type: string
       maxLvl:
-        type: integer
+        type: string
       name:
         type: string
       test:
@@ -41,6 +53,21 @@ info:
   version: "1.0"
 paths:
   /admin/keys:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.APIKey'
+            type: array
+      security:
+      - ApiKeyAuth: []
+      summary: List all API keys
+      tags:
+      - admin
     post:
       consumes:
       - application/json
@@ -60,6 +87,22 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create API key
+      tags:
+      - admin
+  /admin/keys/{key}:
+    delete:
+      parameters:
+      - description: API Key
+        in: path
+        name: key
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      security:
+      - ApiKeyAuth: []
+      summary: Delete an API key
       tags:
       - admin
   /admin/talents:
@@ -135,21 +178,34 @@ paths:
     get:
       consumes:
       - application/json
-      description: get talents, optional search
+      description: get talents, optional search and pagination
       parameters:
       - description: Search query
         in: query
         name: q
         type: string
+      - description: Page number (default 1)
+        in: query
+        name: page
+        type: integer
+      - description: Items per page (default 10)
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Talent'
-            type: array
+            allOf:
+            - $ref: '#/definitions/models.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Talent'
+                  type: array
+              type: object
       security:
       - ApiKeyAuth: []
       summary: List talents

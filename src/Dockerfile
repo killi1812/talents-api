@@ -19,6 +19,7 @@ WORKDIR /app
 
 COPY --from=builder /app/main .
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/data ./data
 
 EXPOSE 8080
 

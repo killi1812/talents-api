@@ -26,6 +26,7 @@ func (a *TalentApi) NewGinApi(r *gin.Engine) {
 	r.Static("/public", "./public")
 	r.StaticFile("/", "./public/index.html")
 	r.StaticFile("/search", "./public/search.html")
+	r.StaticFile("/admin", "./public/admin.html")
 
 	// Version endpoint - unprotected
 	r.GET("/version", app.VersionHandler)
@@ -45,7 +46,9 @@ func (a *TalentApi) NewGinApi(r *gin.Engine) {
 	admin.Use(middleware.AuthMiddleware(a.apiKeyRepo))
 	admin.Use(middleware.AdminOnly())
 	{
+		admin.GET("/keys", a.adminHandler.GetAPIKeys)
 		admin.POST("/keys", a.adminHandler.CreateAPIKey)
+		admin.DELETE("/keys/:key", a.adminHandler.DeleteAPIKey)
 		admin.POST("/talents", a.talentHandler.CreateTalent)
 		admin.PUT("/talents/:id", a.talentHandler.UpdateTalent)
 		admin.DELETE("/talents/:id", a.talentHandler.DeleteTalent)

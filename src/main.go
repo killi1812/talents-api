@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"os"
 
 	"talents-api/app"
 	"talents-api/handlers"
+	"talents-api/models"
 	"talents-api/repository"
 
 	"go.uber.org/zap"
@@ -40,6 +43,30 @@ func main() {
 
 	talentHandler := handlers.NewTalentHandler(talentRepo)
 	adminHandler := handlers.NewAdminHandler(apiKeyRepo)
+
+	// Seeding
+	if os.Getenv("SEED_DATA") == "true" {
+		filePath := "./data/talents.json"
+		if _, err := os.Stat(filePath); err == nil {
+			zap.S().Infof("Seeding data from %s", filePath)
+			fileData, err := os.ReadFile(filePath)
+			if err == nil {
+				var talents []models.Talent
+				if err := json.Unmarshal(fileData, &talents); err == nil {
+					count, err := talentRepo.Seed(context.Background(), talents)
+					if err != nil {
+						zap.S().Errorf("Failed to seed talents: %v", err)
+					} else {
+						zap.S().Infof("Successfully seeded %d talents", count)
+					}
+				} else {
+					zap.S().DPanicf("Failed to Unmarshal seed data: %v", err)
+				}
+			}
+		} else {
+			zap.S().Warnf("Seed file not found at %s", filePath)
+		}
+	}
 
 	api := &TalentApi{
 		talentHandler: talentHandler,

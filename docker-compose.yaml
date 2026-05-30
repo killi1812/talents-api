@@ -20,6 +20,7 @@ services:
       - MONGO_URI=mongodb://mongodb:27017
       - ADMIN_API_KEY=admin-secret-key
       - PORT=8080
+      - SEED_DATA=true
     depends_on:
       - mongodb
 
