@@ -51,7 +51,7 @@ async function search() {
     data.forEach(talent => {
       const card = document.createElement('div');
       card.className = 'talent-card';
-      
+
       let testHtml = '';
       if (talent.test) {
         testHtml = `<p><strong>Test:</strong> ${talent.test}</p>`;
@@ -105,7 +105,7 @@ async function loadKeys() {
     keys.forEach(k => {
       const row = document.createElement('tr');
       const lastUsed = k.lastUsed ? new Date(k.lastUsed).toLocaleString() : 'Never';
-      
+
       row.innerHTML = `
         <td>${k.description || 'No description'}</td>
         <td><code>${k.key}</code></td>
@@ -134,7 +134,7 @@ async function createKey() {
   try {
     const response = await fetch('/admin/keys', {
       method: 'POST',
-      headers: { 
+      headers: {
         'X-API-KEY': adminKey,
         'Content-Type': 'application/json'
       },
