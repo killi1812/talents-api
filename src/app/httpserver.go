@@ -67,7 +67,8 @@ func run(ctx context.Context, wg *sync.WaitGroup, api CreateGinApi, addr string)
 		zap.S().Debug("setting gin in ReleaseMode")
 		gin.SetMode(gin.ReleaseMode)
 	}
-	router := gin.Default()
+	router := gin.New()
+	router.Use(gin.Recovery())
 
 	// setup controllers
 	if api != nil {

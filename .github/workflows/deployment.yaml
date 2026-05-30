@@ -14,7 +14,7 @@ jobs:
       - name: Trigger Deploy Webhook
         uses: fjogeleit/http-request-action@v1
         with:
-          url: "https://webhook.francvok.from.hr/hooks/cache-server"
+          url: "https://webhook.francvok.from.hr/hooks/talent-api"
           method: "POST"
           headers: '{"X-Api-Key": "${{ secrets.WEBHOOK_SECRET }}"}'
           customHeaders: '{"Content-Type": "application/json"}'

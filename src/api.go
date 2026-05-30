@@ -20,6 +20,8 @@ type TalentApi struct {
 }
 
 func (a *TalentApi) NewGinApi(r *gin.Engine) {
+	r.Use(middleware.ZapLogger())
+
 	// Serve static files
 	r.Static("/public", "./public")
 	r.StaticFile("/", "./public/index.html")
@@ -36,7 +38,6 @@ func (a *TalentApi) NewGinApi(r *gin.Engine) {
 	api.Use(middleware.AuthMiddleware(a.apiKeyRepo))
 	{
 		api.GET("/talents", a.talentHandler.GetTalents)
-		api.POST("/talents", a.talentHandler.CreateTalent)
 	}
 
 	// Admin Routes
@@ -45,5 +46,8 @@ func (a *TalentApi) NewGinApi(r *gin.Engine) {
 	admin.Use(middleware.AdminOnly())
 	{
 		admin.POST("/keys", a.adminHandler.CreateAPIKey)
+		admin.POST("/talents", a.talentHandler.CreateTalent)
+		admin.PUT("/talents/:id", a.talentHandler.UpdateTalent)
+		admin.DELETE("/talents/:id", a.talentHandler.DeleteTalent)
 	}
 }

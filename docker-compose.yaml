@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   mongodb:
     image: mongo:latest
@@ -11,6 +9,11 @@ services:
   talents-api:
     build:
       context: ./src
+      args:
+        VERSION: ${VERSION:-0.0.0}
+        COMMIT_HASH: ${COMMIT_HASH:-n/a}
+        BUILD_TIMESTAMP: ${BUILD_TIMESTAMP:-n/a}
+        BUILD_TYPE: dev
     ports:
       - "8080:8080"
     environment:

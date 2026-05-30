@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   app.VersionInfo:
     properties:
@@ -32,8 +33,12 @@ definitions:
       version:
         type: string
     type: object
+host: localhost:8080
 info:
   contact: {}
+  description: Talent API with API Key auth
+  title: Talent API
+  version: "1.0"
 paths:
   /admin/keys:
     post:
@@ -55,6 +60,75 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Create API key
+      tags:
+      - admin
+  /admin/talents:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Talent
+        in: body
+        name: talent
+        required: true
+        schema:
+          $ref: '#/definitions/models.Talent'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Talent'
+      security:
+      - ApiKeyAuth: []
+      summary: Create talent
+      tags:
+      - admin
+  /admin/talents/{id}:
+    delete:
+      parameters:
+      - description: Talent ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema: {}
+      security:
+      - ApiKeyAuth: []
+      summary: Delete talent
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Talent ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Talent
+        in: body
+        name: talent
+        required: true
+        schema:
+          $ref: '#/definitions/models.Talent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Talent'
+      security:
+      - ApiKeyAuth: []
+      summary: Update talent
       tags:
       - admin
   /api/talents:
@@ -81,28 +155,6 @@ paths:
       summary: List talents
       tags:
       - talents
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Talent
-        in: body
-        name: talent
-        required: true
-        schema:
-          $ref: '#/definitions/models.Talent'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Talent'
-      security:
-      - ApiKeyAuth: []
-      summary: Create talent
-      tags:
-      - talents
   /version:
     get:
       description: Get the version of the server
@@ -116,4 +168,10 @@ paths:
       summary: Get the version
       tags:
       - version
+securityDefinitions:
+  ApiKeyAuth:
+    description: Enter your API key (admin or generated)
+    in: header
+    name: X-API-KEY
+    type: apiKey
 swagger: "2.0"

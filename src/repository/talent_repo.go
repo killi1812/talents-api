@@ -69,3 +69,13 @@ func (r *TalentRepository) Search(ctx context.Context, query string) ([]models.T
 	}
 	return talents, nil
 }
+
+func (r *TalentRepository) Update(ctx context.Context, talent *models.Talent) error {
+	_, err := r.collection.ReplaceOne(ctx, bson.M{"_id": talent.Id}, talent)
+	return err
+}
+
+func (r *TalentRepository) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := r.collection.DeleteOne(ctx, bson.M{"_id": id})
+	return err
+}
