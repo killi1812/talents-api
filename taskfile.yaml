@@ -68,7 +68,7 @@ tasks:
     vars:
       BUILD: "prod"
     cmds:
-      - task: build-int
+      - task: docker-build
         vars:
           BUILD: "{{.BUILD}}"
     silent: true
