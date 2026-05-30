@@ -11,7 +11,7 @@ import (
 
 func prodLoggerSetup() error {
 	consoleLogLevel := zap.LevelEnablerFunc(func(level zapcore.Level) bool {
-		return level >= zapcore.PanicLevel
+		return level >= zapcore.InfoLevel
 	})
 
 	// log output

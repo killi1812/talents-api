@@ -16,8 +16,6 @@ import (
 //	@title			Talent API
 //	@version		1.0
 //	@description	Talent API with API Key auth
-//	@host			localhost:8080
-//	@BasePath		/
 
 // @securityDefinitions.apikey	ApiKeyAuth
 // @in							header
@@ -25,7 +23,7 @@ import (
 // @description				Enter your API key (admin or generated)
 func main() {
 	app.Setup()
-	zap.S().Infof("Starting %s version %s (build: %s, commit: %s)", app.APP_NAME, app.Version, app.Build, app.CommitHash)
+	zap.S().Infof("Starting version %s (build: %s, commit: %s)", app.Version, app.Build, app.CommitHash)
 
 	mongoURI := os.Getenv("MONGO_URI")
 	if mongoURI == "" {
