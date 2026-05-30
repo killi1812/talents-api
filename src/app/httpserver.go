@@ -81,9 +81,9 @@ func run(ctx context.Context, wg *sync.WaitGroup, api CreateGinApi, addr string)
 	srv := &http.Server{
 		Addr:         addr,
 		Handler:      router,
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
-		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  3 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
 
 	go func() {

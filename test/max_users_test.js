@@ -2,9 +2,8 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 // --- Configuration ---
-const TALENTS_URL = 'https://192.168.1.110:8011/api';
-// TODO: read from env
-const AUTH_TOKEN = '';
+const TALENTS_URL = __ENV.API_URL || 'http://192.168.1.110:8011/api';
+const AUTH_TOKEN = __ENV.API_KEY;
 
 export const options = {
   executor: 'ramping-vus',
@@ -22,15 +21,18 @@ export const options = {
 const params = {
   headers: {
     'Content-Type': 'application/json',
-    'X-API-KEY ': AUTH_TOKEN,
+    'X-API-KEY': AUTH_TOKEN,
   },
 };
 
-export default function () {
-  // TODO: random string
-  const query = '?q=a';
+// Random search terms for query variation
+const searchTerms = ['a', 'b', 'c', 'skill', 'bonus', 'strength', 'magic', 'combat', 'test'];
 
-  const res = http.get(`${TALENTS_URL}/talents/${query}`, params);
+export default function () {
+  const randomSearch = searchTerms[Math.floor(Math.random() * searchTerms.length)];
+  const query = `?q=${randomSearch}`;
+
+  const res = http.get(`${TALENTS_URL}/talents${query}`, params);
 
   check(res, {
     'status is 200': (r) => r.status === 200,
